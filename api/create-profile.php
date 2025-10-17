@@ -34,9 +34,8 @@ if (!preg_match('/^[a-z0-9-]+$/', $slug)) {
 }
 
 $stmt = $db->prepare("SELECT id FROM profiles WHERE slug = ?");
-$stmt->bind_param("s", $slug);
-$stmt->execute();
-if ($stmt->get_result()->num_rows > 0) {
+$stmt->execute([$slug]);
+if ($stmt->rowCount() > 0) {
     echo json_encode(['success' => false, 'message' => 'This slug is already taken']);
     exit;
 }
@@ -78,11 +77,10 @@ $stmt = $db->prepare("INSERT INTO profiles (user_id, profile_name, slug, title, 
 $stmt->bind_param("issssssssii", $user_id, $profile_name, $slug, $title, $about, $contact_info, $social_links, $image_path, $logo_path, $theme_id, $is_public);
 
 if ($stmt->execute()) {
-    $profile_id = $db->insert_id;
+    $profile_id = $db->lastInsertId();
     
     $stmt = $db->prepare("INSERT INTO analytics (profile_id) VALUES (?)");
-    $stmt->bind_param("i", $profile_id);
-    $stmt->execute();
+    $stmt->execute([$profile_id]);
     
     echo json_encode(['success' => true, 'message' => 'Profile created successfully', 'profile_id' => $profile_id]);
 } else {

@@ -28,9 +28,8 @@ if (!preg_match('/^[a-z0-9-]+$/', $slug)) {
 }
 
 $stmt = $db->prepare("SELECT id FROM websites WHERE slug = ?");
-$stmt->bind_param("s", $slug);
-$stmt->execute();
-if ($stmt->get_result()->num_rows > 0) {
+$stmt->execute([$slug]);
+if ($stmt->rowCount() > 0) {
     echo json_encode(['success' => false, 'message' => 'This slug is already taken']);
     exit;
 }
@@ -48,7 +47,7 @@ $stmt = $db->prepare("INSERT INTO websites (user_id, template_id, slug, website_
 $stmt->bind_param("iissss", $user_id, $template_id, $slug, $website_title, $content_json, $custom_domain);
 
 if ($stmt->execute()) {
-    echo json_encode(['success' => true, 'website_id' => $db->insert_id]);
+    echo json_encode(['success' => true, 'website_id' => $db->lastInsertId()]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Failed to create website']);
 }

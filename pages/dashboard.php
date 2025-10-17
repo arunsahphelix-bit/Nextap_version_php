@@ -10,9 +10,8 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 $stmt = $db->prepare("SELECT verification_status FROM users WHERE id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$user = $stmt->get_result()->fetch_assoc();
+$stmt->execute([$user_id]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if ($user['verification_status'] === 'unverified') {
     header('Location: ' . BASE_URL . '/pages/verify-otp.php');
@@ -20,26 +19,22 @@ if ($user['verification_status'] === 'unverified') {
 }
 
 $stmt = $db->prepare("SELECT COUNT(*) as count FROM profiles WHERE user_id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$profile_count = $stmt->get_result()->fetch_assoc()['count'];
+$stmt->execute([$user_id]);
+$profile_count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
 $stmt = $db->prepare("SELECT COUNT(*) as count FROM websites WHERE user_id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$website_count = $stmt->get_result()->fetch_assoc()['count'];
+$stmt->execute([$user_id]);
+$website_count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
 $stmt = $db->prepare("SELECT COUNT(*) as count FROM nfc_orders WHERE user_id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$order_count = $stmt->get_result()->fetch_assoc()['count'];
+$stmt->execute([$user_id]);
+$order_count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
 $stmt = $db->prepare("SELECT nfc_orders.*, profiles.profile_name FROM nfc_orders 
                       LEFT JOIN profiles ON nfc_orders.selected_profile_id = profiles.id 
                       WHERE nfc_orders.user_id = ? 
                       ORDER BY nfc_orders.created_at DESC LIMIT 5");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
+$stmt->execute([$user_id]);
 $recent_orders = $stmt->get_result();
 
 $page_title = "Dashboard";

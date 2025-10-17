@@ -20,16 +20,13 @@ if (empty($email) || empty($password)) {
 }
 
 $stmt = $db->prepare("SELECT id, name, email, password, verification_status, is_admin FROM users WHERE email = ?");
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$result = $stmt->get_result();
+$stmt->execute([$email]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if ($result->num_rows === 0) {
+if (!$user) {
     echo json_encode(['success' => false, 'message' => 'Invalid credentials']);
     exit;
 }
-
-$user = $result->fetch_assoc();
 
 if (!password_verify($password, $user['password'])) {
     echo json_encode(['success' => false, 'message' => 'Invalid credentials']);

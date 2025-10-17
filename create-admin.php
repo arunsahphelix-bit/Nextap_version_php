@@ -28,10 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Password must be at least 8 characters";
     } else {
         $stmt = $db->prepare("SELECT id FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
+        $stmt->execute([$email]);
         
-        if ($stmt->get_result()->num_rows > 0) {
+        if ($stmt->rowCount() > 0) {
             $error = "Admin user already exists";
         } else {
             $hashed = password_hash($password, PASSWORD_DEFAULT);

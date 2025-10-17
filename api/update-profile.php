@@ -18,9 +18,8 @@ $user_id = $_SESSION['user_id'];
 $profile_id = intval($_POST['profile_id'] ?? 0);
 
 $stmt = $db->prepare("SELECT id FROM profiles WHERE id = ? AND user_id = ?");
-$stmt->bind_param("ii", $profile_id, $user_id);
-$stmt->execute();
-if ($stmt->get_result()->num_rows === 0) {
+$stmt->execute([$profile_id, $user_id]);
+if ($stmt->rowCount() === 0) {
     echo json_encode(['success' => false, 'message' => 'Profile not found']);
     exit;
 }

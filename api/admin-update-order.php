@@ -22,8 +22,7 @@ if (!in_array($status, ['approved', 'rejected', 'processing', 'completed'])) {
 }
 
 $stmt = $db->prepare("SELECT u.email FROM nfc_orders o JOIN users u ON o.user_id = u.id WHERE o.id = ?");
-$stmt->bind_param("i", $order_id);
-$stmt->execute();
+$stmt->execute([$order_id]);
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {

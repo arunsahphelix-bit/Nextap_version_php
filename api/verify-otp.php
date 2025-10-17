@@ -25,8 +25,7 @@ if (empty($otp)) {
 $user_id = $_SESSION['user_id'];
 
 $stmt = $db->prepare("SELECT otp FROM otp_verifications WHERE user_id = ? AND verified = 0 AND expires_at > NOW() ORDER BY created_at DESC LIMIT 1");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
+$stmt->execute([$user_id]);
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
@@ -42,12 +41,10 @@ if ($row['otp'] !== $otp) {
 }
 
 $stmt = $db->prepare("UPDATE users SET verification_status = 'verified' WHERE id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
+$stmt->execute([$user_id]);
 
 $stmt = $db->prepare("UPDATE otp_verifications SET verified = 1 WHERE user_id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
+$stmt->execute([$user_id]);
 
 echo json_encode(['success' => true, 'message' => 'Email verified successfully']);
 ?>

@@ -35,9 +35,8 @@ if ($type === 'profile') {
     }
     
     $stmt = $db->prepare("SELECT id FROM profiles WHERE id = ? AND user_id = ?");
-    $stmt->bind_param("ii", $selected_profile_id, $user_id);
-    $stmt->execute();
-    if ($stmt->get_result()->num_rows === 0) {
+    $stmt->execute([$selected_profile_id, $user_id]);
+    if ($stmt->rowCount() === 0) {
         echo json_encode(['success' => false, 'message' => 'Invalid profile selected']);
         exit;
     }
@@ -76,7 +75,7 @@ $stmt = $db->prepare("INSERT INTO nfc_orders (user_id, type, selected_profile_id
 $stmt->bind_param("isisss", $user_id, $type, $selected_profile_id, $uploaded_design, $requirements, $business_proof);
 
 if ($stmt->execute()) {
-    $order_id = $db->insert_id;
+    $order_id = $db->lastInsertId();
     
     sendOrderNotification($_SESSION['email'], $type, $order_id);
     
