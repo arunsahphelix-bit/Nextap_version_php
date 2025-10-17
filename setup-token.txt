@@ -1,0 +1,14 @@
+SETUP INSTRUCTIONS
+==================
+
+Your create-admin.php access token is defined in the file itself.
+
+1. Open create-admin.php in a text editor
+2. Find the line: define('SETUP_TOKEN', 'CHANGE_ME_...');
+3. Copy the full token value
+4. Visit: http://localhost:5000/create-admin.php?token=YOUR_TOKEN_HERE
+5. Create your admin account
+6. The file will self-delete
+
+SECURITY: The token prevents unauthorized access. Keep this file secure.
+Delete both this file and create-admin.php after admin creation.

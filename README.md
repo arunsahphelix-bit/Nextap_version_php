@@ -54,17 +54,22 @@ A comprehensive web platform combining digital NFC profile builder, custom NFC c
    - Base URL
 
 3. **File Permissions:**
-   Ensure uploads directory is writable:
+   Set secure upload directory permissions:
    ```bash
-   chmod 777 uploads uploads/designs uploads/proofs uploads/profile_images uploads/website_assets
+   chmod 755 uploads uploads/designs uploads/proofs uploads/profile_images uploads/website_assets
    ```
 
-## Default Admin Credentials
+## Admin User Setup
 
-- **Email:** admin@nexttap.in
-- **Password:** password
+For security, there are no default admin credentials. You must create an admin user securely:
 
-(Default password hash in database.sql: 'password')
+1. Run the database setup: `php setup-database.php`
+2. Open `create-admin.php` in a text editor and copy the SETUP_TOKEN value
+3. Visit `/create-admin.php?token=YOUR_TOKEN_HERE` (paste your token)
+4. Create your admin account with a strong password (min 8 characters)
+5. The file will hard-fail if it cannot self-delete (delete manually if needed)
+
+**Security:** The setup token prevents unauthorized access. Without the token, the page returns 404. The file self-destructs after use and hard-fails if deletion fails.
 
 ## Project Structure
 

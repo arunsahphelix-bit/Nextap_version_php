@@ -33,26 +33,38 @@ if ($type === 'profile') {
         echo json_encode(['success' => false, 'message' => 'Please select a profile']);
         exit;
     }
+    
+    $stmt = $db->prepare("SELECT id FROM profiles WHERE id = ? AND user_id = ?");
+    $stmt->bind_param("ii", $selected_profile_id, $user_id);
+    $stmt->execute();
+    if ($stmt->get_result()->num_rows === 0) {
+        echo json_encode(['success' => false, 'message' => 'Invalid profile selected']);
+        exit;
+    }
 } else {
     $requirements = trim($_POST['requirements'] ?? '');
     
-    if (isset($_FILES['uploaded_design']) && $_FILES['uploaded_design']['error'] === UPLOAD_ERR_OK) {
-        $ext = strtolower(pathinfo($_FILES['uploaded_design']['name'], PATHINFO_EXTENSION));
-        if (in_array($ext, ['jpg', 'jpeg', 'png', 'pdf'])) {
-            $filename = 'design_' . uniqid() . '.' . $ext;
-            $uploaded_design = 'uploads/designs/' . $filename;
-            move_uploaded_file($_FILES['uploaded_design']['tmp_name'], '../' . $uploaded_design);
+    if (isset($_FILES['uploaded_design'])) {
+        require_once '../includes/upload-helper.php';
+        $result = validateAndUploadFile($_FILES['uploaded_design'], 'uploads/designs');
+        if ($result['success']) {
+            $uploaded_design = $result['filepath'];
+        } else {
+            echo json_encode(['success' => false, 'message' => $result['message']]);
+            exit;
         }
     }
 }
 
 $business_proof = null;
-if (isset($_FILES['business_proof']) && $_FILES['business_proof']['error'] === UPLOAD_ERR_OK) {
-    $ext = strtolower(pathinfo($_FILES['business_proof']['name'], PATHINFO_EXTENSION));
-    if (in_array($ext, ['jpg', 'jpeg', 'png', 'pdf'])) {
-        $filename = 'proof_' . uniqid() . '.' . $ext;
-        $business_proof = 'uploads/proofs/' . $filename;
-        move_uploaded_file($_FILES['business_proof']['tmp_name'], '../' . $business_proof);
+if (isset($_FILES['business_proof'])) {
+    require_once '../includes/upload-helper.php';
+    $result = validateAndUploadFile($_FILES['business_proof'], 'uploads/proofs');
+    if ($result['success']) {
+        $business_proof = $result['filepath'];
+    } else {
+        echo json_encode(['success' => false, 'message' => $result['message']]);
+        exit;
     }
 } else {
     echo json_encode(['success' => false, 'message' => 'Business proof is required']);

@@ -55,23 +55,21 @@ $social_links = json_encode([
     'facebook' => $_POST['facebook'] ?? ''
 ]);
 
+require_once '../includes/upload-helper.php';
+
 $image_path = null;
-if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-    $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
-    if (in_array($ext, ['jpg', 'jpeg', 'png'])) {
-        $filename = 'profile_' . uniqid() . '.' . $ext;
-        $image_path = 'uploads/profile_images/' . $filename;
-        move_uploaded_file($_FILES['image']['tmp_name'], '../' . $image_path);
+if (isset($_FILES['image'])) {
+    $result = validateAndUploadFile($_FILES['image'], 'uploads/profile_images', ['jpg', 'jpeg', 'png']);
+    if ($result['success']) {
+        $image_path = $result['filepath'];
     }
 }
 
 $logo_path = null;
-if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
-    $ext = strtolower(pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION));
-    if (in_array($ext, ['jpg', 'jpeg', 'png'])) {
-        $filename = 'logo_' . uniqid() . '.' . $ext;
-        $logo_path = 'uploads/profile_images/' . $filename;
-        move_uploaded_file($_FILES['logo']['tmp_name'], '../' . $logo_path);
+if (isset($_FILES['logo'])) {
+    $result = validateAndUploadFile($_FILES['logo'], 'uploads/profile_images', ['jpg', 'jpeg', 'png']);
+    if ($result['success']) {
+        $logo_path = $result['filepath'];
     }
 }
 
