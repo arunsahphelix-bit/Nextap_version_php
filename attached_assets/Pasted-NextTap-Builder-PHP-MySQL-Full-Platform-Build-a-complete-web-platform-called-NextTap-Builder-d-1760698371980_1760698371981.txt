@@ -1,0 +1,169 @@
+NextTap Builder (PHP + MySQL Full Platform)
+
+Build a complete web platform called NextTap Builder, designed for shared hosting environments like MilesWeb (only PHP + MySQL supported).
+The system combines a digital NFC profile builder, custom NFC card order portal, and a mini website builder with 7 pre-designed templates — all in one platform.
+No Node.js, no external build tools. Use pure PHP, MySQL, HTML, CSS, Bootstrap or Tailwind, and vanilla JavaScript with AJAX.
+
+🧱 Folder Structure
+/ (root)
+├── assets/             # CSS, JS, images, fonts
+├── includes/           # header.php, footer.php, db.php, mailer.php
+├── pages/              # main page views (dashboard, profile, orders, etc.)
+├── templates/          # 7 pre-made website templates (HTML + dynamic PHP placeholders)
+├── uploads/            # uploaded user designs, proofs, and website assets
+├── api/                # PHP files for AJAX (login, register, order submit, OTP verify)
+├── admin/              # admin dashboard files
+└── config.php          # global configuration (DB, email, etc.)
+
+💾 Database Structure (MySQL)
+
+Create these core tables:
+
+users → id, name, email, password, company_name, verification_status, otp_code, created_at
+
+profiles → id, user_id, profile_name, about, contact_info, social_links, image, theme_id, is_public
+
+nfc_orders → id, user_id, type (‘profile’ | ‘custom’), selected_profile_id, uploaded_design, requirements, business_proof, status, created_at
+
+otp_verifications → id, user_id, otp, verified, created_at
+
+websites → id, user_id, template_id, domain_name, website_title, content_json, status
+
+analytics → id, profile_id, total_views, total_taps, last_viewed_at
+
+🔑 Core Modules
+1. User Authentication & Verification
+
+Signup, Login, Logout system
+
+OTP verification via company email using PHPMailer (SMTP)
+
+Unverified users can’t place orders or publish websites
+
+Password hashing via PHP password_hash()
+
+Session-based login management
+
+2. Profile Builder
+
+Users can create & edit professional NFC-ready digital profiles
+
+Add name, title, company, about, links, images, logo, and contact details
+
+Public profile URL like:
+https://nexttap.in/profile/rajat
+
+Each profile shows analytics (views, taps, clicks)
+
+Allow user to select themes/layouts for profile (3–4 predesigned styles)
+
+3. NFC Card Ordering System
+
+User chooses between:
+
+Use existing profile → tapping NFC opens their built profile
+
+Custom NFC card → user uploads design, fills custom request form, and uploads business proof
+
+Orders saved in nfc_orders table
+
+Email notification on order placement and admin approval
+
+4. Email OTP Verification System
+
+OTP sent to user’s company email after signup
+
+OTP stored in otp_verifications table
+
+Once verified, user status updates in users.verification_status
+
+5. Admin Dashboard
+
+Manage users, profiles, websites, and orders
+
+Approve/reject NFC orders
+
+Verify uploaded designs and proofs
+
+See analytics and active users
+
+Manually send approval emails
+
+🧱 Website Builder (7 Templates Feature)
+
+Users can create a personal or company website directly from their dashboard
+
+Choose from 7 responsive, SEO-optimized templates stored in /templates/
+
+Each template includes editable sections like:
+
+Hero banner
+
+About section
+
+Services
+
+Portfolio / Gallery
+
+Contact form
+
+Dynamic content stored as JSON in the websites table
+
+PHP script replaces placeholders with real data when loading site
+
+Option to preview, publish, or download ZIP of the website
+
+Subdomain support example:
+https://nexttap.in/sites/rajatsonar/
+
+Custom domain field (optional text, for display only — no DNS needed)
+
+⚙ Technical Requirements
+
+Language: PHP 8+
+
+Database: MySQL 5.7+
+
+Frontend: HTML5, CSS3, Bootstrap 5 or TailwindCSS, Vanilla JS
+
+Email: PHPMailer for SMTP OTP and notifications
+
+Uploads: Secure file validation for designs/proofs (only PNG, JPG, PDF allowed)
+
+Environment Config:
+
+config.php → database credentials, email SMTP, site base URL
+
+Works 100% on cPanel (shared hosting) — no Node, Composer, or external build needed
+
+💡 Standout & Smart Features
+
+NFC tap & profile view analytics tracking
+
+Integrated QR code generator for profile/website sharing
+
+Light/Dark mode toggle
+
+Smart Bio Generator (JS-based helper using prompt text — optional)
+
+AI Website Copy Suggestions (text-only client-side helper)
+
+Order tracking & status updates for users
+
+“Recommended Templates” section based on user type (individual/business)
+
+Fully mobile responsive for card-tap previews
+
+📦 Expected Output
+
+Deliver a ready-to-upload PHP project (no Node.js) with all above features:
+
+Full codebase with working pages
+
+SQL file for database import
+
+Admin credentials
+
+Example profiles, orders, and websites
+
+All assets & templates ready to run on MilesWeb/cPanel hosting
