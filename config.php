@@ -7,9 +7,9 @@ define('DB_NAME', 'nexttap_builder'); // Your database name
 
 define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_PORT', 587);
-define('SMTP_USER', 'phelix1.acmagrade@gmail.com');
-define('SMTP_PASS', 'bmsy oyez pxse ktta');
-define('SMTP_FROM', 'noreply@nexttap.in');
+define('SMTP_USER', 'rajatvsonar@gmail.com');
+define('SMTP_PASS', 'vdoj arxp riha teol');
+define('SMTP_FROM', 'rajatvsonar@gmail.com');
 define('SMTP_FROM_NAME', 'NextTap Builder');
 
 define('BASE_URL', 'http://localhost/nextap_version/Nextap_version_php');

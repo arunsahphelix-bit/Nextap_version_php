@@ -1,0 +1,118 @@
+Step 1: Create the Database
+
+Open phpMyAdmin: http://localhost/phpmyadmin/
+
+Click Databases → Create database
+
+Name the database:
+
+nexttap_builder
+
+
+Click Create
+
+Step 2: Create the users table
+
+Select the nexttap_builder database
+
+Click SQL and paste:
+
+CREATE TABLE users (
+  id INT(11) AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  company_name VARCHAR(255) NOT NULL,
+  verification_status ENUM('pending','verified') DEFAULT 'pending',
+  is_admin TINYINT(1) DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+Click Go
+
+Step 3: Create the profiles table
+CREATE TABLE profiles (
+  id INT(11) AUTO_INCREMENT PRIMARY KEY,
+  user_id INT(11) NOT NULL,
+  profile_name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) NOT NULL UNIQUE,
+  title VARCHAR(255),
+  about TEXT,
+  contact_info JSON,
+  social_links JSON,
+  image VARCHAR(255),
+  logo VARCHAR(255),
+  theme_id INT(1),
+  is_public TINYINT(1) DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+
+Click Go
+
+Step 4: Create the nfc_orders table
+CREATE TABLE nfc_orders (
+  id INT(11) AUTO_INCREMENT PRIMARY KEY,
+  user_id INT(11) NOT NULL,
+  type ENUM('profile','custom') NOT NULL,
+  selected_profile_id INT(11),
+  uploaded_design VARCHAR(255),
+  requirements TEXT,
+  business_proof VARCHAR(255) NOT NULL,
+  status ENUM('pending','approved','rejected') DEFAULT 'pending',
+  admin_notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (selected_profile_id) REFERENCES profiles(id) ON DELETE SET NULL
+);
+
+
+Click Go
+
+Step 5: Create the otp_verifications table
+CREATE TABLE otp_verifications (
+  id INT(11) AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) NOT NULL,
+  otp_code VARCHAR(6) NOT NULL,
+  expires_at DATETIME NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+Click Go
+
+Step 6: Create the websites table
+CREATE TABLE websites (
+  id INT(11) AUTO_INCREMENT PRIMARY KEY,
+  user_id INT(11) NOT NULL,
+  site_name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) NOT NULL UNIQUE,
+  template_id INT(1),
+  content_json JSON,
+  status ENUM('draft','published','unpublished') DEFAULT 'draft',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+
+Click Go
+
+Step 7: Create the analytics table
+CREATE TABLE analytics (
+  id INT(11) AUTO_INCREMENT PRIMARY KEY,
+  profile_id INT(11) NOT NULL,
+  event_type ENUM('view','tap') NOT NULL,
+  ip_address VARCHAR(50),
+  user_agent VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE
+);
+
+
+Click Go
+
+✅ After these steps, your database is fully ready for NextTapBuilder loc
