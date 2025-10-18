@@ -9,14 +9,18 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-$stmt = $db->prepare("SELECT p.*, COALESCE(a.total_views, 0) as total_views, COALESCE(a.total_taps, 0) as total_taps 
-                      FROM profiles p 
-                      LEFT JOIN analytics a ON p.id = a.profile_id 
-                      WHERE p.user_id = ? 
-                      ORDER BY p.created_at DESC");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$profiles = $stmt->get_result();
+// ✅ PDO version
+$stmt = $db->prepare("
+    SELECT p.*, 
+           COALESCE(a.total_views, 0) AS total_views, 
+           COALESCE(a.total_taps, 0) AS total_taps
+    FROM profiles p
+    LEFT JOIN analytics a ON p.id = a.profile_id
+    WHERE p.user_id = ?
+    ORDER BY p.created_at DESC
+");
+$stmt->execute([$user_id]);
+$profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $page_title = "My Profiles";
 include '../includes/header.php';
@@ -30,14 +34,14 @@ include '../includes/header.php';
         </a>
     </div>
     
-    <?php if ($profiles->num_rows === 0): ?>
+    <?php if (empty($profiles)): ?>
         <div class="alert alert-info text-center">
             <i class="fas fa-info-circle me-2"></i>
             You haven't created any profiles yet. <a href="create-profile.php">Create your first profile</a>
         </div>
     <?php else: ?>
         <div class="row">
-            <?php while ($profile = $profiles->fetch_assoc()): ?>
+            <?php foreach ($profiles as $profile): ?>
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="card profile-card h-100">
                     <div class="card-body">
@@ -51,7 +55,7 @@ include '../includes/header.php';
                         <?php endif; ?>
                         
                         <h5 class="text-center"><?php echo htmlspecialchars($profile['profile_name']); ?></h5>
-                        <?php if ($profile['title']): ?>
+                        <?php if (!empty($profile['title'])): ?>
                             <p class="text-center text-muted"><?php echo htmlspecialchars($profile['title']); ?></p>
                         <?php endif; ?>
                         
@@ -83,7 +87,7 @@ include '../includes/header.php';
                     </div>
                 </div>
             </div>
-            <?php endwhile; ?>
+            <?php endforeach; ?>
         </div>
     <?php endif; ?>
 </div>
@@ -95,8 +99,7 @@ include '../includes/header.php';
                 <h5 class="modal-title">Profile QR Code</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body text-center" id="qrContent">
-            </div>
+            <div class="modal-body text-center" id="qrContent"></div>
         </div>
     </div>
 </div>

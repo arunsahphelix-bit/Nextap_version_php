@@ -9,6 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+// ✅ Fetch user verification status
 $stmt = $db->prepare("SELECT verification_status FROM users WHERE id = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -18,6 +19,7 @@ if ($user['verification_status'] === 'unverified') {
     exit;
 }
 
+// ✅ Fetch counts
 $stmt = $db->prepare("SELECT COUNT(*) as count FROM profiles WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $profile_count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
@@ -30,12 +32,14 @@ $stmt = $db->prepare("SELECT COUNT(*) as count FROM nfc_orders WHERE user_id = ?
 $stmt->execute([$user_id]);
 $order_count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
-$stmt = $db->prepare("SELECT nfc_orders.*, profiles.profile_name FROM nfc_orders 
+// ✅ Fetch recent orders
+$stmt = $db->prepare("SELECT nfc_orders.*, profiles.profile_name 
+                      FROM nfc_orders 
                       LEFT JOIN profiles ON nfc_orders.selected_profile_id = profiles.id 
                       WHERE nfc_orders.user_id = ? 
                       ORDER BY nfc_orders.created_at DESC LIMIT 5");
 $stmt->execute([$user_id]);
-$recent_orders = $stmt->get_result();
+$recent_orders = $stmt->fetchAll(PDO::FETCH_ASSOC); // ✅ fetchAll returns an array
 
 $page_title = "Dashboard";
 include '../includes/header.php';
@@ -114,7 +118,7 @@ include '../includes/header.php';
         </div>
     </div>
     
-    <?php if ($recent_orders->num_rows > 0): ?>
+    <?php if (!empty($recent_orders)): ?>
     <div class="card">
         <div class="card-header">
             <h5 class="mb-0">Recent Orders</h5>
@@ -131,7 +135,7 @@ include '../includes/header.php';
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while ($order = $recent_orders->fetch_assoc()): ?>
+                        <?php foreach ($recent_orders as $order): ?>
                         <tr>
                             <td>#<?php echo $order['id']; ?></td>
                             <td><?php echo ucfirst($order['type']); ?></td>
@@ -145,7 +149,7 @@ include '../includes/header.php';
                             </td>
                             <td><?php echo date('M d, Y', strtotime($order['created_at'])); ?></td>
                         </tr>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
