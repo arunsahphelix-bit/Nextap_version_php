@@ -136,6 +136,7 @@ include '../includes/header.php';
 </div>
 
 <script>
+// ===== THEME SELECTOR =====
 document.querySelectorAll('.theme-option').forEach(option => {
     option.addEventListener('click', function() {
         document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
@@ -144,10 +145,61 @@ document.querySelectorAll('.theme-option').forEach(option => {
     });
 });
 
+// ===== AUTO SLUG GENERATION & VALIDATION =====
+function generateSlug(str) {
+    return str
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')  // replace invalid chars
+        .replace(/-+/g, '-')           // collapse multiple hyphens
+        .replace(/^-|-$/g, '');        // trim hyphens
+}
+
+function isValidSlug(slug) {
+    return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+}
+
+const nameInput = document.querySelector('input[name="profile_name"]');
+const slugInput = document.querySelector('input[name="slug"]');
+
+if (nameInput && slugInput) {
+    let lastAuto = '';
+    const slugNote = document.createElement('small');
+    slugNote.className = 'text-danger';
+    slugInput.parentElement.appendChild(slugNote);
+
+    nameInput.addEventListener('input', () => {
+        const autoSlug = generateSlug(nameInput.value);
+        if (slugInput.value === '' || slugInput.value === lastAuto) {
+            slugInput.value = autoSlug;
+            lastAuto = autoSlug;
+        }
+        if (!isValidSlug(slugInput.value)) {
+            slugNote.textContent = 'Invalid format — use lowercase, numbers, and hyphens only.';
+        } else {
+            slugNote.textContent = '';
+        }
+    });
+
+    slugInput.addEventListener('input', () => {
+        if (!isValidSlug(slugInput.value)) {
+            slugNote.textContent = 'Invalid format — use lowercase, numbers, and hyphens only.';
+        } else {
+            slugNote.textContent = '';
+        }
+    });
+}
+
+// ===== FORM SUBMISSION (AJAX) =====
 document.getElementById('profileForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
     const formData = new FormData(this);
+    const slug = formData.get('slug');
+    if (!isValidSlug(slug)) {
+        alert('Invalid slug format. Use lowercase letters, numbers, and hyphens only.');
+        return;
+    }
     
     fetch('<?php echo BASE_URL; ?>/api/create-profile.php', {
         method: 'POST',
@@ -156,16 +208,16 @@ document.getElementById('profileForm').addEventListener('submit', function(e) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showAlert('Profile created successfully!', 'success');
+            alert('Profile created successfully!');
             setTimeout(() => {
                 window.location.href = 'profiles.php';
-            }, 1500);
+            }, 1200);
         } else {
-            showAlert(data.message || 'Failed to create profile', 'danger');
+            alert(data.message || 'Failed to create profile.');
         }
     })
-    .catch(error => {
-        showAlert('An error occurred', 'danger');
+    .catch(() => {
+        alert('An unexpected error occurred.');
     });
 });
 </script>

@@ -9,10 +9,10 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+// ✅ Fetch public profiles using PDO
 $stmt = $db->prepare("SELECT id, profile_name, slug FROM profiles WHERE user_id = ? AND is_public = 1");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$profiles = $stmt->get_result();
+$stmt->execute([$user_id]);
+$profiles = $stmt->fetchAll(PDO::FETCH_ASSOC); // fetch all profiles into an array
 
 $page_title = "Order NFC Card";
 include '../includes/header.php';
@@ -57,12 +57,12 @@ include '../includes/header.php';
                                 <label class="form-label">Select Profile *</label>
                                 <select class="form-select" name="selected_profile_id">
                                     <option value="">Choose a profile...</option>
-                                    <?php while ($profile = $profiles->fetch_assoc()): ?>
+                                    <?php foreach ($profiles as $profile): ?>
                                         <option value="<?php echo $profile['id']; ?>">
                                             <?php echo htmlspecialchars($profile['profile_name']); ?> 
                                             (<?php echo BASE_URL; ?>/profile/<?php echo $profile['slug']; ?>)
                                         </option>
-                                    <?php endwhile; ?>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
                         </div>
@@ -117,11 +117,13 @@ function selectOrderType(type) {
     if (type === 'profile') {
         document.getElementById('profileSection').style.display = 'block';
         document.getElementById('customSection').style.display = 'none';
-        document.querySelector('input[name="uploaded_design"]').removeAttribute('required');
+        const uploadedInput = document.querySelector('input[name="uploaded_design"]');
+        if(uploadedInput) uploadedInput.removeAttribute('required');
     } else {
         document.getElementById('profileSection').style.display = 'none';
         document.getElementById('customSection').style.display = 'block';
-        document.querySelector('input[name="uploaded_design"]').setAttribute('required', 'required');
+        const uploadedInput = document.querySelector('input[name="uploaded_design"]');
+        if(uploadedInput) uploadedInput.setAttribute('required', 'required');
     }
 }
 
