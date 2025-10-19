@@ -7,8 +7,8 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once '../includes/db.php';
 
-// ✅ Using PDO now
-$stmt = $db->prepare("SELECT verification_status FROM users WHERE id = ?");
+// Fetch user data
+$stmt = $db->prepare("SELECT email, verification_status FROM users WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -27,8 +27,8 @@ include '../includes/header.php';
             <div class="card shadow-sm">
                 <div class="card-body p-5 text-center">
                     <i class="fas fa-envelope-circle-check fa-4x text-primary mb-3"></i>
-                    <h2 class="mb-3">Verify Your Email NexTap team</h2>
-                    <p class="text-muted mb-4">We've sent a 6-digit OTP to your email</p>
+                    <h2 class="mb-3">Verify Your Email – NexTap Team</h2>
+                    <p class="text-muted mb-4">We've sent a 6-digit OTP to your email: <strong><?php echo $user['email']; ?></strong></p>
                     
                     <form id="otpForm">
                         <div class="mb-3">
@@ -54,16 +54,15 @@ include '../includes/header.php';
 <script>
 document.getElementById('otpForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    
+
     const formData = new FormData(this);
-    const data = Object.fromEntries(formData);
-    
-    makeAjaxRequest('<?php echo BASE_URL; ?>/api/verify-otp.php', 'POST', data, function(err, response) {
-        if (err) {
-            showAlert('Verification failed. Please try again.', 'danger');
-            return;
-        }
-        
+
+    fetch('<?php echo BASE_URL; ?>/api/verify-otp.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(response => {
         if (response.success) {
             showAlert('Email verified successfully!', 'success');
             setTimeout(() => {
@@ -72,22 +71,25 @@ document.getElementById('otpForm').addEventListener('submit', function(e) {
         } else {
             showAlert(response.message || 'Invalid OTP', 'danger');
         }
+    })
+    .catch(() => {
+        showAlert('Verification failed. Please try again.', 'danger');
     });
 });
 
 function resendOTP() {
-    makeAjaxRequest('<?php echo BASE_URL; ?>/api/resend-otp.php', 'POST', {}, function(err, response) {
-        if (err) {
+    fetch('<?php echo BASE_URL; ?>/api/resend-otp.php', { method: 'POST' })
+        .then(res => res.json())
+        .then(response => {
+            if (response.success) {
+                showAlert('OTP resent successfully!', 'success');
+            } else {
+                showAlert(response.message || 'Failed to resend OTP', 'danger');
+            }
+        })
+        .catch(() => {
             showAlert('Failed to resend OTP', 'danger');
-            return;
-        }
-        
-        if (response.success) {
-            showAlert('OTP resent successfully!', 'success');
-        } else {
-            showAlert(response.message || 'Failed to resend OTP', 'danger');
-        }
-    });
+        });
 }
 </script>
 
