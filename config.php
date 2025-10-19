@@ -1,17 +1,18 @@
 <?php
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'nexttap_builder');
+define('DB_USER', 'root');          // Your MySQL username
+define('DB_PORT', 3306);      // <-- your MySQL port
+define('DB_PASS', 'route');              // Your MySQL password
+define('DB_NAME', 'nexttap_builder'); // Your database name
 
 define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_PORT', 587);
-define('SMTP_USER', 'your-email@gmail.com');
-define('SMTP_PASS', 'your-app-password');
-define('SMTP_FROM', 'noreply@nexttap.in');
+define('SMTP_USER', 'rajatvsonar@gmail.com');
+define('SMTP_PASS', 'vdoj arxp riha teol');
+define('SMTP_FROM', 'rajatvsonar@gmail.com');
 define('SMTP_FROM_NAME', 'NextTap Builder');
 
-define('BASE_URL', 'http://localhost:5000');
+define('BASE_URL', 'http://localhost/nextap_version/Nextap_version_php');
 define('SITE_NAME', 'NextTap Builder');
 
 define('UPLOAD_MAX_SIZE', 5242880);

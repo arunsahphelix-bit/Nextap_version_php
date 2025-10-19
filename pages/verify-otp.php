@@ -7,13 +7,12 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once '../includes/db.php';
 
+// ✅ Using PDO now
 $stmt = $db->prepare("SELECT verification_status FROM users WHERE id = ?");
-$stmt->bind_param("i", $_SESSION['user_id']);
-$stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
+$stmt->execute([$_SESSION['user_id']]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if ($user['verification_status'] === 'verified') {
+if ($user && $user['verification_status'] === 'verified') {
     header('Location: ' . BASE_URL . '/pages/dashboard.php');
     exit;
 }
@@ -28,7 +27,7 @@ include '../includes/header.php';
             <div class="card shadow-sm">
                 <div class="card-body p-5 text-center">
                     <i class="fas fa-envelope-circle-check fa-4x text-primary mb-3"></i>
-                    <h2 class="mb-3">Verify Your Email</h2>
+                    <h2 class="mb-3">Verify Your Email NexTap team</h2>
                     <p class="text-muted mb-4">We've sent a 6-digit OTP to your email</p>
                     
                     <form id="otpForm">
