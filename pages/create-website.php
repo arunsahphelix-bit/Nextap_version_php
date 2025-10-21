@@ -122,20 +122,29 @@ function selectTemplate(templateId) {
 
 document.getElementById('websiteForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    
+
     const formData = new FormData(this);
-    const data = Object.fromEntries(formData);
-    
-    makeAjaxRequest('<?php echo BASE_URL; ?>/api/create-website.php', 'POST', data, function(err, response) {
-        if (err || !response.success) {
-            showAlert(response?.message || 'Failed to create website', 'danger');
+    const data = Object.fromEntries(formData.entries());
+
+    fetch('<?php echo BASE_URL; ?>/api/create-website.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(response => {
+        if (!response.success) {
+            alert(response.message || 'Failed to create website');
             return;
         }
-        
-        showAlert('Website created successfully!', 'success');
-        setTimeout(() => {
-            window.location.href = 'websites.php';
-        }, 1500);
+        alert('Website created successfully!');
+        setTimeout(() => window.location.href = 'websites.php', 1500);
+    })
+    .catch(err => {
+        console.error(err);
+        alert('An unexpected error occurred.');
     });
 });
 </script>

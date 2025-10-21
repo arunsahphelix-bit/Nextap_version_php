@@ -16,7 +16,7 @@ Step 2: Create the users table
 Select the nexttap_builder database
 
 Click SQL and paste:
-
+//users
 CREATE TABLE users (
   id INT(11) AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE users (
 
 
 Click Go
-
+//profiles
 Step 3: Create the profiles table
 CREATE TABLE profiles (
   id INT(11) AUTO_INCREMENT PRIMARY KEY,
@@ -51,7 +51,7 @@ CREATE TABLE profiles (
 
 
 Click Go
-
+//nfc_orders
 Step 4: Create the nfc_orders table
 CREATE TABLE nfc_orders (
   id INT(11) AUTO_INCREMENT PRIMARY KEY,
@@ -71,7 +71,7 @@ CREATE TABLE nfc_orders (
 
 
 Click Go
-
+//otp_verifications
 Step 5: Create the otp_verifications table
 CREATE TABLE otp_verifications (
   id INT(11) AUTO_INCREMENT PRIMARY KEY,
@@ -83,7 +83,7 @@ CREATE TABLE otp_verifications (
 
 
 Click Go
-
+//websites
 Step 6: Create the websites table
 CREATE TABLE websites (
   id INT(11) AUTO_INCREMENT PRIMARY KEY,
@@ -100,7 +100,7 @@ CREATE TABLE websites (
 
 
 Click Go
-
+//analytics
 Step 7: Create the analytics table
 CREATE TABLE analytics (
   id INT(11) AUTO_INCREMENT PRIMARY KEY,
